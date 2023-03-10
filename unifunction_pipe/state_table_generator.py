@@ -21,25 +21,24 @@ class state_table:
             print(i, end = " ")
         print("")
         for i, state in enumerate(self.res_table):
-            print( "S{}".format( (i+1) ), end = " ")
+            print(f"S{i + 1}", end = " ")
             print(state)
         print()
 
     def extract_forbidden_state(self):
         self.forbidden_states = set()
 
-        for i, stage in enumerate(self.res_table):
+        for stage in self.res_table:
             pos_arr = self.get_pos_ones(stage)
             for j, pos in enumerate(pos_arr):
                 for k in range(j+1, len(pos_arr)):
                     self.forbidden_states.add(pos_arr[k] - pos)
 
-        self.forbidden_states = list(self.forbidden_states)
-        self.forbidden_states.sort()
+        self.forbidden_states = sorted(self.forbidden_states)
         print("forbidden states = ", self.forbidden_states)
 
     def extract_collision_vector(self):
-        self.collision_vector = int(0)
+        self.collision_vector = 0
         for i in self.forbidden_states:
             self.collision_vector |= 1 << (i-1)
 
@@ -49,7 +48,7 @@ class state_table:
 
         self.state_start = [self.collision_vector]
         self.state_table = []
-        self.state_set = set([self.collision_vector])
+        self.state_set = {self.collision_vector}
 
         #flag = False
         ptr = 0 # points to each row of the state table.
@@ -73,29 +72,21 @@ class state_table:
     def display_state_table(self):
         print("state table :: \n")
         for i, start in enumerate(self.state_start):
-            print(str(bin(start))[2:],  "||", end = " ")
+            print(bin(start)[2:], "||", end = " ")
             for st in self.state_table[i]:
-                if(st == 0):
-                    print(str(bin(st))[2:], "\t\t\t", end = "")
+                if (st == 0):
+                    print(bin(st)[2:], "\t\t\t", end = "")
                 else:
-                    print(str(bin(st))[2:], "\t", end = "")
+                    print(bin(st)[2:], "\t", end = "")
             print()
 
     def get_pos_ones(self, arr):
-        occ = []
-        for i, val in enumerate(arr):
-            if val == 1:
-                occ.append(i)
-        return occ
+        return [i for i, val in enumerate(arr) if val == 1]
 
     def get_vector_zeros(self, vector):
-        pos = []
-        vector = str(bin(vector))[2:]
+        vector = bin(vector)[2:]
         vector = vector[::-1]
-        for i, val in enumerate(vector):
-            if(val == '0'):
-                pos.append(i+1)
-        return pos
+        return [i+1 for i, val in enumerate(vector) if (val == '0')]
 
 
 '''
